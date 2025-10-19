@@ -1,5 +1,7 @@
+const { Connection } = require("mongoose");
 const Content = require("../models/Content");
 const Tag=require('../models/Tags');
+const User = require("../models/User");
 
 const addContent=async (req,res)=>{
     try{
@@ -52,4 +54,58 @@ const addContent=async (req,res)=>{
     }
 }
 
-module.exports=addContent;
+const getContents=async(req,res)=>{
+    try{
+        const userId=req.userId;
+
+        console.log(userId);
+
+        const isUserExists=await User.findById(userId);
+        
+        if(!isUserExists){
+            return res.status(400).json({
+                message:"User does not Exists"
+            })
+        }
+
+        const contents=await Content.find({userId:userId})
+        .populate("tags","title _id")
+        .populate("userId","userName email");
+        console.log(contents);
+
+        return res.status(200).json({
+            message:"Sucessfully Fetched All The Contents",
+            contents
+        })
+    }catch(err){
+        console.log(err);
+        return res.status(400).json({
+            message:`Error getting Content:${err}`
+        })
+    }
+}
+
+// const deleteContents=async(req,res)=>{
+//     try{
+//         const userId=req.userId;
+
+//         const isPostExists=await Connection.find({userId:userId});
+
+//         if(!isPostExists){
+//             return res.status(400).json({
+//                 message:"Post Does not exists"
+//             })
+//         }
+
+
+//     }catch(err){
+//         console.log(err);
+//         return res.status(401).json({
+//             message:"You are acessing to Delete that you Wont Wone"
+//         })
+//     }
+// }
+module.exports={
+    addContent,
+    getContents
+};
