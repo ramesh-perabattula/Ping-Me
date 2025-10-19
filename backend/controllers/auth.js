@@ -29,6 +29,7 @@ const jwt=require('jsonwebtoken');
 
 
 const newUSer=async(req,res)=>{
+    console.log("new user function in controllers called")
     try{
         const {email,password,userName}=req.body;
         console.log(email);
@@ -95,6 +96,8 @@ const loginUser=async(req,res)=>{
             expiresIn:"1d"
         })
 
+        res.setHeader("Authorization", `Bearer ${token}`);
+        
         return res.status(200).json({
             message:"User Logged in Sucessfully",
             token,

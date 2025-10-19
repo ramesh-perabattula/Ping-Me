@@ -5,6 +5,8 @@ const addContent=async (req,res)=>{
     try{
         const { link, type, tags, title}=req.body;
 
+        const userId=req.userId;
+
         if(!link || !type || !tags || !title){
             return res.status(201).json({
                 message:"Please Provide All The Required details To create"
@@ -30,13 +32,15 @@ const addContent=async (req,res)=>{
             link,
             type,
             title,
-            tags:tagIds
+            tags:tagIds,
+            userId
         });
 
         await content.save();
 
         const populatedContent=await Content.findById(content._id)
-        .populate('tags',"title _id");
+        .populate('tags',"title _id")
+        .populate('userId','email');
 
         return res.status(200).json({
             message:"Content Created Sucessfully",
