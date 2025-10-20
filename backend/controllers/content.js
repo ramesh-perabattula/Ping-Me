@@ -85,27 +85,42 @@ const getContents=async(req,res)=>{
     }
 }
 
-// const deleteContents=async(req,res)=>{
-//     try{
-//         const userId=req.userId;
+const deleteContents=async(req,res)=>{
+    try{
 
-//         const isPostExists=await Connection.find({userId:userId});
+        const contentId=req.params.id;
+        const userId=req.userId;
 
-//         if(!isPostExists){
-//             return res.status(400).json({
-//                 message:"Post Does not exists"
-//             })
-//         }
+        const isPostExists=await Connection.findById(contentId);
 
+        if(!isPostExists){
+            return res.status(400).json({
+                message:"Post Does not exists"
+            })
+        }
 
-//     }catch(err){
-//         console.log(err);
-//         return res.status(401).json({
-//             message:"You are acessing to Delete that you Wont Wone"
-//         })
-//     }
-// }
+        if(isPostExists.userId.toString()!==userId){
+            return res.status(400).json({
+                message:"Your are the Owner of this Post"
+            })
+        }
+
+        await isPostExists.findByIdAndDelete(contentId);
+
+        return res.status(200).json({
+            message:" Post deleted sucessfully"
+        })
+
+    }catch(err){
+        console.log(err);
+        return res.status(401).json({
+            message:"You are acessing to Delete that you Wont Wone"
+        })
+    }
+}
+
 module.exports={
     addContent,
-    getContents
+    getContents,
+    deleteContents
 };
